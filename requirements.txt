@@ -1,0 +1,8 @@
+certifi==2026.7.22
+joblib==1.5.3
+numpy==2.2.6
+pandas==2.3.3
+scikit-learn==1.7.2
+xgboost==3.2.0
+matplotlib==3.10.9
+PyYAML==6.0.3

@@ -1,0 +1,5 @@
+dataset,n_test,top1_accuracy,macro_f1,best_per_agent_f1,best_agent,worst_per_agent_f1,worst_agent,chance_top1,permuted_macro_f1_mean,permuted_macro_f1_sd,paper_macro_f1
+2wikimultihop,1024,0.8076,0.8053,0.96,seed_2_lite,0.6795,glm_4.6v,0.0714,0.0712,0.0081,0.7936
+frames,1050,0.7638,0.7616,0.974,qwen3_5_27b,0.5,gemini_3_flash,0.0714,0.0711,0.0079,0.7526999999999999
+webshop,1036,0.7529,0.7506,0.9404,seed_2_lite,0.4677,glm_4.6v_flash,0.0714,0.0708,0.0082,0.7423000000000001
+deepshop,523,0.7055,0.7018,0.8861,seed_2_lite,0.5316,gemma-4-31B-it,0.0714,0.0709,0.0115,0.7256999999999999

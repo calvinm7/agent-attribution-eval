@@ -1,0 +1,157 @@
+# Single source for all paths, seeds, and hyperparameters.
+
+paths:
+  traces_dir: data/traces
+  reference_dir: data/reference
+  features_file: data/features.csv
+  models_dir: data/models
+  results_dir: results
+  figures_dir: results/figures
+
+release:
+  tarball_url: https://media.githubusercontent.com/media/KabakaWilliam/known_actions/main/src/traces.tar.xz
+  tarball_path: data/traces.tar.xz
+  tarball_sha256: 79aeee6a2a7c9b32cfa0eb2a2c95663258338b33eeac1eb0117001dde5712f79
+  tarball_bytes: 184239560
+  reference_files:
+    trace_analyzer.py: https://raw.githubusercontent.com/KabakaWilliam/known_actions/main/src/trace_analyzer.py
+    frames_sampled_split_record.json: https://raw.githubusercontent.com/KabakaWilliam/known_actions/main/src/split_records/frames_sampled_split_record.json
+
+# The paper's 14 agents (Table 2), by trace directory id.
+agents:
+  - claude_opus_4_6
+  - gemini_3_1
+  - gemini_3_flash
+  - gemma-4-31B-it
+  - gemma_4_26B_A4B_it
+  - glm_4.6v
+  - glm_4.6v_flash
+  - gpt_5_4
+  - qwen3_5_27b
+  - qwen3_5_9b
+  - qwen3vl_30b_a3b
+  - qwen3vl_8b
+  - seed_2_lite
+  - uitars_7b
+
+# The four benchmarks (Table 1). split: folders = release ships explicit
+# train/val/test directories; resplit = one pool directory, split per agent
+# with the reference RNG procedure (see common.py).
+datasets:
+  2wikimultihop:
+    site: wikipedia
+    split: folders
+    folders: {train: 2wikimultihop_train, val: 2wikimultihop_val, test: 2wikimultihop_test}
+    tasks: {train: 150, val: 75, test: 75}
+  frames:
+    site: wikipedia
+    split: resplit
+    pool_folder: frames_test
+    resplit_cap: 300
+    tasks: {train: 150, val: 75, test: 75}
+  webshop:
+    site: amazon
+    split: folders
+    folders: {train: webshop_train, val: webshop_val, test: webshop_test}
+    tasks: {train: 150, val: 75, test: 75}
+  deepshop:
+    site: amazon
+    split: resplit
+    pool_folder: deepshop_ood
+    resplit_cap: null
+    tasks: {train: 75, val: 37, test: 38}
+
+# WebGames: the release's fifth environment, absent from the paper's tables.
+# Used only as an extra training source in the scaling analysis (its site has
+# no sibling, giving sibling-free mixes at k = 3 and a k = 4 point). Ignored
+# everywhere else.
+extra_datasets:
+  webgames:
+    site: webgames
+    split: folders
+    folders: {train: webgames_train, val: webgames_val, test: webgames_test}
+    tasks: {train: 100, val: 25, test: 25}
+
+resplit:
+  seed: 42
+  fracs: [0.5, 0.25, 0.25]
+
+# Model lineage families from Table 2 model ids, used to tag held-out agents
+# as easy (no same-family sibling among the other 13) or hard unknowns.
+# The traces' meta.model_family is the serving-adapter family (it labels
+# Claude Opus 4.6 as gpt-5 via OpenRouter), so it is not usable here.
+# gemini-3.1-pro and gemini-3-flash share a lineage; the paper's Table 11
+# treats them as two families, reported as a sensitivity variant.
+families:
+  claude_opus_4_6: claude-4
+  gemini_3_1: gemini-3
+  gemini_3_flash: gemini-3
+  gemma-4-31B-it: gemma-4
+  gemma_4_26B_A4B_it: gemma-4
+  glm_4.6v: glm-4.6v
+  glm_4.6v_flash: glm-4.6v
+  gpt_5_4: gpt-5
+  qwen3_5_27b: qwen3.5
+  qwen3_5_9b: qwen3.5
+  qwen3vl_30b_a3b: qwen3-vl
+  qwen3vl_8b: qwen3-vl
+  seed_2_lite: seed-2
+  uitars_7b: uitars-1.5
+
+# Trace exclusion patterns from the reference implementation
+# (trace_analyzer.py, _INVALID_TRACE_PATTERNS): API failures are dropped,
+# task-level failures are kept.
+invalid_error_patterns:
+  - credit balance is too low
+  - insufficient_quota
+  - invalid_api_key
+  - 401 unauthorized
+  - 402 payment
+  - failed to call ai model service
+
+features:
+  viewport: {width: 1280, height: 768}
+  top_quarter_px: 192
+  deep_scroll_pct: 60
+  structural_keys: [Enter, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Tab, Escape, Backspace, Delete]
+
+# XGBoost search protocol from the paper (Appendix A.3, Table 4).
+xgboost:
+  seed: 42
+  tree_method: hist
+  eval_metric: mlogloss
+  model_n_jobs: 1
+  search:
+    n_iter: 40
+    cv: 3
+    scoring: accuracy
+    n_jobs: -1
+  space:
+    n_estimators: [100, 200, 300, 400, 500]
+    learning_rate: [0.01, 0.05, 0.1, 0.2, 0.3]
+    max_depth: [3, 4, 5, 6, 7, 8]
+    subsample: [0.6, 0.7, 0.8, 0.9, 1.0]
+    colsample_bytree: [0.5, 0.6, 0.7, 0.8, 1.0]
+    reg_alpha: [0, 0.01, 0.1, 1.0]
+    reg_lambda: [0.5, 1.0, 2.0, 5.0]
+
+open_set:
+  far_points: [0.01, 0.05]
+
+metrics:
+  permutation_baseline_n: 1000
+
+scaling:
+  seeds: [0, 1, 2, 3, 4]
+  bootstrap_resamples: 1000
+  confidence: 0.95
+  # Fixed across all scaling fits: the params the reference search selected
+  # for both frames and deepshop in-domain (its most repeated selection).
+  fixed_params:
+    n_estimators: 500
+    learning_rate: 0.05
+    max_depth: 3
+    subsample: 0.8
+    colsample_bytree: 0.5
+    reg_alpha: 0.01
+    reg_lambda: 1.0

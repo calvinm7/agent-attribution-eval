@@ -1,0 +1,12 @@
+plans/
+notes/
+.env
+.claude/
+
+data/
+
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.DS_Store

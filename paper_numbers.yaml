@@ -1,0 +1,53 @@
+# Published numbers from Lugoloobi et al., arXiv:2605.14786, typed from the
+# paper for side-by-side comparison. Values are percentages as printed.
+
+# Table 9 (Appendix B): in-domain XGBoost macro F1 across the 14 agents.
+table9_macro_f1_xgb:
+  2wikimultihop: 79.36
+  frames: 75.27
+  webshop: 74.23
+  deepshop: 72.57
+
+# Table 9: in-domain XGBoost per-agent F1, order 2wiki/frames/webshop/deepshop.
+table9_per_agent_f1_xgb:
+  gpt_5_4: [91.50, 78.48, 68.78, 68.29]
+  claude_opus_4_6: [70.51, 68.71, 66.18, 75.00]
+  gemini_3_1: [65.19, 75.16, 71.43, 59.46]
+  gemini_3_flash: [76.12, 52.70, 71.14, 74.29]
+  seed_2_lite: [96.05, 96.60, 93.42, 87.50]
+  gemma-4-31B-it: [82.12, 82.80, 74.17, 57.89]
+  gemma_4_26B_A4B_it: [72.87, 58.11, 72.26, 57.58]
+  glm_4.6v: [64.56, 61.54, 79.45, 75.61]
+  glm_4.6v_flash: [70.86, 65.28, 45.38, 72.73]
+  qwen3vl_30b_a3b: [92.72, 80.27, 73.53, 83.78]
+  qwen3vl_8b: [82.61, 81.38, 75.15, 68.42]
+  qwen3_5_27b: [90.91, 97.40, 82.19, 87.67]
+  qwen3_5_9b: [63.72, 65.22, 74.07, 64.86]
+  uitars_7b: [91.28, 90.07, 92.09, 82.86]
+
+# Table 10 (Appendix B): cross-task OOD XGBoost macro F1.
+table10_macro_f1_xgb:
+  2wikimultihop->frames: 41.07
+  frames->2wikimultihop: 49.76
+  deepshop->webshop: 55.87
+  webshop->deepshop: 52.72
+
+# Table 14 (Appendix B.2): generalisation summary, XGBoost macro F1.
+table14:
+  in_domain: {2wikimultihop: 79.4, frames: 75.3, webshop: 74.3, deepshop: 72.6}
+  pooled_site:
+    wikipedia_on_2wikimultihop: 81.3
+    wikipedia_on_frames: 77.2
+    amazon_on_webshop: 78.8
+    amazon_on_deepshop: 70.9
+  cross_site:
+    wikipedia_pooled_on_amazon: 29.70
+    amazon_pooled_on_wikipedia: 25.98
+
+# Figure 3 anchors quoted in the text: open-set LOO AUROC, XGBoost.
+fig3_auroc_quoted:
+  gpt_5_4: {2wikimultihop: 0.84}
+  seed_2_lite: {2wikimultihop: 0.47, webshop: 0.38, deepshop: 0.46}
+
+chance:
+  top1: 0.0714  # 1/14
