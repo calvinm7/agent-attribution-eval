@@ -3,7 +3,12 @@ notes/
 .env
 .claude/
 
-data/
+# Paper release (no license). Recreated by fetch_data.py.
+data/traces/
+data/traces.tar.xz
+data/reference/
+data/features.csv
+data/models/
 
 .venv/
 __pycache__/
